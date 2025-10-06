@@ -82,99 +82,59 @@ class Main extends PluginBase {
         $this->db->close();
     }
 
-    public static function getCssStyles(): string {
-        return '
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
-                h1, h2 { color: #0056b3; }
-                form { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
-                input[type="text"], input[type="password"], input[type="submit"] {
-                    width: 100%;
-                    padding: 10px;
-                    margin-bottom: 10px;
-                    border: 1px solid #ddd;
-                    border-radius: 4px;
-                    box-sizing: border-box;
-                }
-                input[type="submit"] {
-                    background-color: #007bff;
-                    color: white;
-                    border: none;
-                    cursor: pointer;
-                }
-                input[type="submit"]:hover {
-                    background-color: #0056b3;
-                }
-                p { margin-bottom: 10px; }
-                a { color: #007bff; text-decoration: none; }
-                a:hover { text-decoration: underline; }
-                .error { color: red; }
-                .success { color: green; }
 
-                /* Tabs styling */
-                .tabs {
-                    display: flex;
-                    flex-wrap: wrap;
-                    margin-bottom: 20px;
-                }
-                .tabs label {
-                    order: 1;
-                    display: block;
-                    padding: 10px 20px;
-                    margin-right: 2px;
-                    cursor: pointer;
-                    background: #e0e0e0;
-                    font-weight: bold;
-                    border-radius: 5px 5px 0 0;
-                }
-                .tabs .tab {
-                    order: 99;
-                    flex-grow: 1;
-                    width: 100%;
-                    display: none;
-                    padding: 20px;
-                    background: #fff;
-                    border-radius: 0 8px 8px 8px;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                }
-                .tabs input[type="radio"] {
-                    display: none;
-                }
-                .tabs input[type="radio"]:checked + label {
-                    background: #007bff;
-                    color: white;
-                }
-                .tabs input[type="radio"]:checked + label + .tab {
-                    display: block;
-                }
-            </style>
-        ';
-    }
 
     private function startWebServer(string $dbPath): void {
         $router = new Router();
 
         $router->get("/login", function (HttpRequest $request, HttpResponse $response) {
             $error = $request->getURL()->getQueryParam("error");
-            $html = '<!DOCTYPE html><html><head><title>Login</title>' . self::getCssStyles() . '</head><body>';
-            $html .= '<h2>Login to your account</h2>';
+            $html = '<!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Login</title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+            </head>
+            <body>
+                <div class="container mt-5">
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h2 class="card-title text-center mb-4">Login to your account</h2>';
             if ($error) {
-                $html .= '<p style="color:red;">Invalid username or password.</p>';
+                $html .= '<div class="alert alert-danger" role="alert">Invalid username or password.</div>';
             }
             $registered = $request->getURL()->getQueryParam("registered");
             if ($registered) {
-                $html .= '<p style="color:green;">Registration successful! Please log in.</p>';
+                $html .= '<div class="alert alert-success" role="alert">Registration successful! Please log in.</div>';
             }
             $deleteAccountSuccess = $request->getURL()->getQueryParam("delete_account_success");
             if ($deleteAccountSuccess) {
-                $html .= '<p style="color:green;">Account deleted successfully!</p>';
+                $html .= '<div class="alert alert-success" role="alert">Account deleted successfully!</div>';
             }
-            $html .= '<form action="/login" method="post">';
-            $html .= 'Username: <input type="text" name="username"><br>';
-            $html .= 'Password: <input type="password" name="password"><br>';
-            $html .= '<input type="submit" value="Login">';
-            $html .= '</form>';
-            $html .= '<p>Don\'t have an account? <a href="/register">Register here</a></p></body></html>';
+            $html .= '                                    <form action="/login" method="post">
+                                        <div class="mb-3">
+                                            <label for="username" class="form-label">Username:</label>
+                                            <input type="text" class="form-control" id="username" name="username" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label">Password:</label>
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                                    </form>
+                                    <p class="text-center mt-3">Don't have an account? <a href="/register">Register here</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+            </body>
+            </html>';
             $response->send($html);
         });
         $router->get("/", static function (HttpRequest $request, HttpResponse $response) {
@@ -216,21 +176,51 @@ class Main extends PluginBase {
 
         $router->get("/register", function (HttpRequest $request, HttpResponse $response) {
             $error = $request->getURL()->getQueryParam("error");
-            $html = '<!DOCTYPE html><html><head><title>Register</title>' . self::getCssStyles() . '</head><body>';
-            $html .= '<h2>Register a new account</h2>';
+            $html = '<!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Register</title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+            </head>
+            <body>
+                <div class="container mt-5">
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h2 class="card-title text-center mb-4">Register a new account</h2>';
             if ($error === "1") {
-                $html .= '<p style="color:red;">Username already exists.</p>';
+                $html .= '<div class="alert alert-danger" role="alert">Username already exists.</div>';
             } elseif ($error === "2") {
-                $html .= '<p style="color:red;">Passwords do not match.</p>';
+                $html .= '<div class="alert alert-danger" role="alert">Passwords do not match.</div>';
             } elseif ($error === "3") {
-                $html .= '<p style="color:red;">Please fill in all fields.</p>';
+                $html .= '<div class="alert alert-danger" role="alert">Please fill in all fields.</div>';
             }
-            $html .= '<form action="/register" method="post">';
-            $html .= 'Username: <input type="text" name="username"><br>';
-            $html .= 'Password: <input type="password" name="password"><br>';
-            $html .= 'Confirm Password: <input type="password" name="confirm_password"><br>';
-            $html .= '<input type="submit" value="Register">';
-            $html .= '</form></body></html>';
+            $html .= '                                    <form action="/register" method="post">
+                                        <div class="mb-3">
+                                            <label for="username" class="form-label">Username:</label>
+                                            <input type="text" class="form-control" id="username" name="username" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label">Password:</label>
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="confirm_password" class="form-label">Confirm Password:</label>
+                                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">Register</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+            </body>
+            </html>';
             $response->send($html);
         });
 
@@ -304,60 +294,93 @@ class Main extends PluginBase {
 
             if ($result) {
                 $username = $result['username'];
-                $html = '<!DOCTYPE html><html><head><title>Account</title>' . self::getCssStyles() . '</head><body>';
-                $html .= "<h1>Welcome, " . htmlspecialchars($username) . "!</h1>";
-                $html .= "<p>This is your account page.</p>";
+                $html = '<!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Account</title>
+                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+                </head>
+                <body>
+                    <div class="container mt-5">
+                        <h1 class="mb-4">Welcome, ' . htmlspecialchars($username) . '!</h1>
+                        <p>This is your account page.</p>
 
-                $html .= '<div class="tabs">';
-                // Tab 1: Change Password
-                $html .= '<input type="radio" name="tabs" id="tab1" checked>';
-                $html .= '<label for="tab1">Change Password</label>';
-                $html .= '<div class="tab">';
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="change-password-tab" data-bs-toggle="tab" data-bs-target="#change-password" type="button" role="tab" aria-controls="change-password" aria-selected="true">Change Password</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="delete-account-tab" data-bs-toggle="tab" data-bs-target="#delete-account" type="button" role="tab" aria-controls="delete-account" aria-selected="false">Delete Account</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="change-password" role="tabpanel" aria-labelledby="change-password-tab">
+                                <div class="card mt-3">
+                                    <div class="card-body">
+                                        <h2 class="card-title">Change Password</h2>';
                 $changePasswordError = $request->getURL()->getQueryParam("change_password_error");
                 if ($changePasswordError === "1") {
-                    $html .= '<p class="error">Current password incorrect.</p>';
+                    $html .= '<div class="alert alert-danger" role="alert">Current password incorrect.</div>';
                 } elseif ($changePasswordError === "2") {
-                    $html .= '<p class="error">New passwords do not match.</p>';
+                    $html .= '<div class="alert alert-danger" role="alert">New passwords do not match.</div>';
                 } elseif ($changePasswordError === "3") {
-                    $html .= '<p class="error">Please fill in all password fields.</p>';
+                    $html .= '<div class="alert alert-danger" role="alert">Please fill in all password fields.</div>';
                 }
                 $changePasswordSuccess = $request->getURL()->getQueryParam("change_password_success");
                 if ($changePasswordSuccess) {
-                    $html .= '<p class="success">Password changed successfully!</p>';
+                    $html .= '<div class="alert alert-success" role="alert">Password changed successfully!</div>';
                 }
-                $html .= '<h2>Change Password</h2>';
-                $html .= '<form action="/account/change-password" method="post">';
-                $html .= 'Current Password: <input type="password" name="current_password"><br>';
-                $html .= 'New Password: <input type="password" name="new_password"><br>';
-                $html .= 'Confirm New Password: <input type="password" name="confirm_new_password"><br>';
-                $html .= '<input type="submit" value="Change Password">';
-                $html .= '</form>';
-                $html .= '</div>'; // End tab1
-
-                // Tab 2: Delete Account
-                $html .= '<input type="radio" name="tabs" id="tab2">';
-                $html .= '<label for="tab2">Delete Account</label>';
-                $html .= '<div class="tab">';
+                $html .= '                                        <form action="/account/change-password" method="post">
+                                            <div class="mb-3">
+                                                <label for="current_password" class="form-label">Current Password:</label>
+                                                <input type="password" class="form-control" id="current_password" name="current_password" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="new_password" class="form-label">New Password:</label>
+                                                <input type="password" class="form-control" id="new_password" name="new_password" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="confirm_new_password" class="form-label">Confirm New Password:</label>
+                                                <input type="password" class="form-control" id="confirm_new_password" name="confirm_new_password" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Change Password</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="delete-account" role="tabpanel" aria-labelledby="delete-account-tab">
+                                <div class="card mt-3">
+                                    <div class="card-body">
+                                        <h2 class="card-title">Delete Account</h2>
+                                        <p class="text-danger">WARNING: This action is irreversible. All your data will be lost.</p>';
                 $deleteAccountError = $request->getURL()->getQueryParam("delete_account_error");
                 if ($deleteAccountError === "1") {
-                    $html .= '<p class="error">Current password incorrect.</p>';
+                    $html .= '<div class="alert alert-danger" role="alert">Current password incorrect.</div>';
                 } elseif ($deleteAccountError === "2") {
-                    $html .= '<p class="error">Please enter your password to confirm deletion.</p>';
+                    $html .= '<div class="alert alert-danger" role="alert">Please enter your password to confirm deletion.</div>';
                 }
                 $deleteAccountSuccess = $request->getURL()->getQueryParam("delete_account_success");
                 if ($deleteAccountSuccess) {
-                    $html .= '<p class="success">Account deleted successfully!</p>';
+                    $html .= '<div class="alert alert-success" role="alert">Account deleted successfully!</div>';
                 }
-                $html .= '<h2>Delete Account</h2>';
-                $html .= '<p style="color:red;">WARNING: This action is irreversible. All your data will be lost.</p>';
-                $html .= '<form action="/account/delete" method="post">';
-                $html .= 'Enter your password to confirm: <input type="password" name="password_confirm"><br>';
-                $html .= '<input type="submit" value="Delete Account">';
-                $html .= '</form>';
-                $html .= '</div>'; // End tab2
-                $html .= '</div>'; // End tabs
-
-                $html .= '<p><a href="/logout">Logout</a></p></body></html>';
+                $html .= '                                        <form action="/account/delete" method="post">
+                                            <div class="mb-3">
+                                                <label for="password_confirm" class="form-label">Enter your password to confirm:</label>
+                                                <input type="password" class="form-control" id="password_confirm" name="password_confirm" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-danger">Delete Account</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mt-4"><a href="/logout" class="btn btn-secondary">Logout</a></p>
+                    </div>
+                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+                </body>
+                </html>';
                 $response->send($html);
             } else {
                 $response->setStatus(302);

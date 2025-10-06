@@ -1,8 +1,31 @@
 <?php
 
+/*
+ *
+__        __   _       _         _   _
+ * \ \      / /__| |__   / \  _   _| |_| |__
+ *  \ \ /\ / / _ \ '_ \ / _ \| | | | __| '_ \
+ *   \ V  V /  __/ |_) / ___ \ |_| | |_| | | |
+ *    \_/\_/ \___|_.__/_/   \_\__,_|\__|_| |_|
+ *
+ * This program is free software: you can redistribute and/or modify
+ * it under the terms of the CSSM Unlimited License v2.0.
+ *
+ * This license permits unlimited use, modification, and distribution
+ * for any purpose while maintaining authorship attribution.
+ *
+ * The software is provided "as is" without warranty of any kind.
+ *
+ * @author LuthMC
+ * @author Sergiy Chernega
+ * @link https://chernega.eu.org/
+ *
+ *
+ */
+
 declare(strict_types=1);
 
-namespace WebAuth;
+namespace ChernegaSergiy\WebAuth;
 
 use Hebbinkpro\WebServer\http\message\HttpRequest;
 use Hebbinkpro\WebServer\http\message\HttpResponse;
@@ -25,15 +48,14 @@ use pocketmine\scheduler\Task;
 use pocketmine\utils\Config;
 use SQLite3;
 
-class Main extends PluginBase implements Listener
-{
+class Main extends PluginBase implements Listener {
+
     private SQLite3 $db;
     private ?WebServer $webServer = null;
     private array $loggedInPlayers = [];
     private Config $config;
 
-    public function onEnable(): void
-    {
+    public function onEnable(): void {
         if (!class_exists(WebServer::class)) {
             $this->getLogger()->critical("pmmp-webserver virion not found. Please install it to use this plugin.");
             $this->getServer()->getPluginManager()->disablePlugin($this);
@@ -61,16 +83,14 @@ class Main extends PluginBase implements Listener
         $this->startWebServer($dbPath);
     }
 
-    public function onDisable(): void
-    {
+    public function onDisable(): void {
         if ($this->webServer?->isStarted()) {
             $this->webServer->close();
         }
         $this->db->close();
     }
 
-    public static function getCssStyles(): string
-    {
+    public static function getCssStyles(): string {
         return '
             <style>
                 body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
@@ -139,8 +159,7 @@ class Main extends PluginBase implements Listener
         ';
     }
 
-    private function startWebServer(string $dbPath): void
-    {
+    private function startWebServer(string $dbPath): void {
         $router = new Router();
 
         $router->get("/login", function (HttpRequest $request, HttpResponse $response) {
@@ -540,8 +559,7 @@ class Main extends PluginBase implements Listener
         }
     }
 
-    public function onCommand(CommandSender $sender, Command $command, string $label, array $args): bool
-    {
+    public function onCommand(CommandSender $sender, Command $command, string $label, array $args): bool {
         if (!$sender instanceof Player) {
             $sender->sendMessage("Please run this command in-game.");
             return false;
@@ -601,20 +619,17 @@ class Main extends PluginBase implements Listener
         return true;
     }
 
-    public function isRegistered(string $playerName): bool
-    {
+    public function isRegistered(string $playerName): bool {
         $stmt = $this->db->prepare("SELECT 1 FROM players WHERE username = :user");
         $stmt->bindValue(":user", $playerName);
         return $stmt->execute()->fetchArray() !== false;
     }
 
-    public function isLoggedIn(Player $player): bool
-    {
+    public function isLoggedIn(Player $player): bool {
         return isset($this->loggedInPlayers[$player->getName()]);
     }
 
-    public function onPlayerJoin(PlayerJoinEvent $event): void
-    {
+    public function onPlayerJoin(PlayerJoinEvent $event): void {
         $player = $event->getPlayer();
         if ($this->isRegistered($player->getName())) {
             $player->sendMessage("§aWelcome back! Please /login <password> to continue.");
@@ -623,43 +638,36 @@ class Main extends PluginBase implements Listener
         }
     }
 
-    public function onPlayerQuit(PlayerQuitEvent $event): void
-    {
+    public function onPlayerQuit(PlayerQuitEvent $event): void {
         unset($this->loggedInPlayers[$event->getPlayer()->getName()]);
     }
 
-    private function blockAction(Player $player, string $message, \pocketmine\event\Cancellable $event): void
-    {
+    private function blockAction(Player $player, string $message, \pocketmine\event\Cancellable $event): void {
         if (!$this->isLoggedIn($player)) {
             $player->sendMessage($message);
             $event->cancel();
         }
     }
 
-    public function onPlayerMove(PlayerMoveEvent $event): void
-    {
+    public function onPlayerMove(PlayerMoveEvent $event): void {
         if (!$this->isLoggedIn($event->getPlayer())) {
             $event->cancel();
         }
     }
 
-    public function onPlayerInteract(PlayerInteractEvent $event): void
-    {
+    public function onPlayerInteract(PlayerInteractEvent $event): void {
         $this->blockAction($event->getPlayer(), "§cPlease login or register to interact.", $event);
     }
 
-    public function onPlayerDropItem(PlayerDropItemEvent $event): void
-    {
+    public function onPlayerDropItem(PlayerDropItemEvent $event): void {
         $this->blockAction($event->getPlayer(), "§cPlease login or register to drop items.", $event);
     }
 
-    public function onPlayerChat(PlayerChatEvent $event): void
-    {
+    public function onPlayerChat(PlayerChatEvent $event): void {
         $this->blockAction($event->getPlayer(), "§cPlease login or register to chat.", $event);
     }
 
-    public function onServerCommand(CommandEvent $event): void
-    {
+    public function onServerCommand(CommandEvent $event): void {
         $sender = $event->getSender();
         if (!$sender instanceof Player) return;
 

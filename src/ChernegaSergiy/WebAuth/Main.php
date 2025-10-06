@@ -645,13 +645,13 @@ class Main extends PluginBase implements Listener {
     private function blockAction(Player $player, string $message, \pocketmine\event\Cancellable $event): void {
         if (!$this->isLoggedIn($player)) {
             $player->sendMessage($message);
-            $event->cancel();
+            $event->setCancelled(true);
         }
     }
 
     public function onPlayerMove(PlayerMoveEvent $event): void {
         if (!$this->isLoggedIn($event->getPlayer())) {
-            $event->cancel();
+            $event->setCancelled(true);
         }
     }
 

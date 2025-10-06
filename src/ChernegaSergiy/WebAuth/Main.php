@@ -2,7 +2,7 @@
 
 /*
  *
-__        __   _       _         _   _
+ * __        __   _       _         _   _
  * \ \      / /__| |__   / \  _   _| |_| |__
  *  \ \ /\ / / _ \ '_ \ / _ \| | | | __| '_ \
  *   \ V  V /  __/ |_) / ___ \ |_| | |_| | | |
@@ -82,8 +82,6 @@ class Main extends PluginBase {
         $this->db->close();
     }
 
-
-
     private function startWebServer(string $dbPath): void {
         $router = new Router();
 
@@ -126,7 +124,7 @@ class Main extends PluginBase {
                                         </div>
                                         <button type="submit" class="btn btn-primary w-100">Login</button>
                                     </form>
-                                    <p class="text-center mt-3">Don't have an account? <a href="/register">Register here</a></p>
+                                    <p class="text-center mt-3">Don\'t have an account? <a href="/register">Register here</a></p>
                                 </div>
                             </div>
                         </div>
@@ -213,6 +211,7 @@ class Main extends PluginBase {
                                         </div>
                                         <button type="submit" class="btn btn-primary w-100">Register</button>
                                     </form>
+                                    <p class="text-center mt-3">Already have an account? <a href="/login">Login here</a></p>
                                 </div>
                             </div>
                         </div>

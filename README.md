@@ -60,6 +60,9 @@ After installing and configuring the plugin, the web panel will be accessible vi
 - **Account Management:** After logging in, you will be redirected to your account page where you can manage your password.
   ![Account Change Password](assets/account_change_password.png)
 
+- **Account Deletion:** You can also delete your account from the account management page.
+  ![Account Deletion](assets/account_delete.png)
+
 ### In-game Commands
 
 You can also use the following commands directly in-game:

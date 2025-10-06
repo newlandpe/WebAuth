@@ -142,7 +142,7 @@ class Main extends PluginBase {
 
         $router->post("/login", static function (HttpRequest $request, HttpResponse $response, string $dbPath) {
             parse_str($request->getBody(), $body);
-            $username = $body['username'] ?? '';
+            $username = strtolower($body['username'] ?? '');
             $password = $body['password'] ?? '';
 
             $db = new SQLite3($dbPath);
@@ -225,7 +225,7 @@ class Main extends PluginBase {
 
         $router->post("/register", static function (HttpRequest $request, HttpResponse $response, string $dbPath) {
             parse_str($request->getBody(), $body);
-            $username = $body['username'] ?? '';
+            $username = strtolower($body['username'] ?? '');
             $password = $body['password'] ?? '';
             $confirmPassword = $body['confirm_password'] ?? '';
 
@@ -292,7 +292,7 @@ class Main extends PluginBase {
             $db->close();
 
             if ($result) {
-                $username = $result['username'];
+                $username = strtolower($result['username']);
                 $html = '<!DOCTYPE html>
                 <html lang="en">
                 <head>
@@ -420,7 +420,7 @@ class Main extends PluginBase {
                 return;
             }
 
-            $username = $result['username'];
+            $username = strtolower($result['username']);
 
             parse_str($request->getBody(), $body);
             $currentPassword = $body['current_password'] ?? '';
@@ -495,7 +495,7 @@ class Main extends PluginBase {
                 return;
             }
 
-            $username = $result['username'];
+            $username = strtolower($result['username']);
 
             parse_str($request->getBody(), $body);
             $passwordConfirm = $body['password_confirm'] ?? '';
@@ -581,7 +581,8 @@ class Main extends PluginBase {
 
         switch ($command->getName()) {
             case "register":
-                if ($this->isRegistered($sender->getName())) {
+                $playerName = strtolower($sender->getName());
+                if ($this->isRegistered($playerName)) {
                     $sender->sendMessage("§cYou are already registered.");
                     return false;
                 }
@@ -596,16 +597,17 @@ class Main extends PluginBase {
 
                 $passwordHash = password_hash($args[0], PASSWORD_BCRYPT);
                 $stmt = $this->db->prepare("INSERT INTO players (username, password) VALUES (:user, :pass)");
-                $stmt->bindValue(":user", $sender->getName());
+                $stmt->bindValue(":user", $playerName);
                 $stmt->bindValue(":pass", $passwordHash);
                 $stmt->execute();
 
-                $this->loggedInPlayers[$sender->getName()] = true;
+                $this->loggedInPlayers[$playerName] = true;
                 $sender->sendMessage("§aYou have been successfully registered and logged in!");
                 break;
 
             case "login":
-                if (!$this->isRegistered($sender->getName())) {
+                $playerName = strtolower($sender->getName());
+                if (!$this->isRegistered($playerName)) {
                     $sender->sendMessage("§cYou are not registered. Use /register <password> <password>.");
                     return false;
                 }
@@ -619,11 +621,11 @@ class Main extends PluginBase {
                 }
 
                 $stmt = $this->db->prepare("SELECT password FROM players WHERE username = :user");
-                $stmt->bindValue(":user", $sender->getName());
+                $stmt->bindValue(":user", $playerName);
                 $result = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
 
                 if ($result && password_verify($args[0], $result['password'])) {
-                    $this->loggedInPlayers[$sender->getName()] = true;
+                    $this->loggedInPlayers[$playerName] = true;
                     $sender->sendMessage("§aLogin successful!");
                 } else {
                     $sender->sendMessage("§cIncorrect password.");
@@ -634,16 +636,18 @@ class Main extends PluginBase {
     }
 
     public function isRegistered(string $playerName): bool {
+        $playerName = strtolower($playerName);
         $stmt = $this->db->prepare("SELECT 1 FROM players WHERE username = :user");
         $stmt->bindValue(":user", $playerName);
         return $stmt->execute()->fetchArray() !== false;
     }
 
     public function isLoggedIn(Player $player): bool {
-        return isset($this->loggedInPlayers[$player->getName()]);
+        return isset($this->loggedInPlayers[strtolower($player->getName())]);
     }
 
     public function removeLoggedInPlayer(string $playerName): void {
+        $playerName = strtolower($playerName);
         unset($this->loggedInPlayers[$playerName]);
     }
 }

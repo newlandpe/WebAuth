@@ -10,7 +10,7 @@
 >
 > Use it at your own risk.
 
-[![Poggit CI](https://poggit.pmmp.io/ci.shield/your-username/WebAuth/WebAuth)](https://poggit.pmmp.io/ci/your-username/WebAuth/WebAuth)
+[![Poggit CI](https://poggit.pmmp.io/ci.shield/newlandpe/WebAuth/WebAuth)](https://poggit.pmmp.io/ci/newlandpe/WebAuth/WebAuth)
 
 A simple web-based authentication panel for PocketMine-MP, providing basic account management functionalities through a web interface.
 

@@ -1,0 +1,9 @@
+---
+branches:
+- main
+projects:
+  WebAuth:
+    path: ""
+    libs:
+      - src: Hebbinkpro/pmmp-webserver/pmmp-webserver
+        version: ^0.5.0

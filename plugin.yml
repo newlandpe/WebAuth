@@ -1,6 +1,5 @@
----
 name: WebAuth
-main: WebAuth\Main
+main: ChernegaSergiy\WebAuth\Main
 version: 1.0.0
 api: 5.0.0
 author: ChernegaSergiy
@@ -19,6 +18,3 @@ permissions:
     default: true
   webauth.command.login:
     default: true
-  webauth.command.webauth:
-    default: op
-...

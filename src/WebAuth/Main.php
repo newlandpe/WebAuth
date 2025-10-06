@@ -498,7 +498,7 @@ class Main extends PluginBase implements Listener
             $response->setStatus(302);
             $response->getHeaders()->setHeader("Location", "/login?delete_account_success=1");
         }, $dbPath);
-        
+
         $router->get("/logout", static function (HttpRequest $request, HttpResponse $response, string $dbPath) {
             $cookieHeader = $request->getHeaders()->getHeader("Cookie");
             $cookies = [];

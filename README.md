@@ -43,12 +43,29 @@ host: 0.0.0.0
 port: 8080
 ```
 
-## Commands
+## Usage
 
-This plugin primarily focuses on web-based interactions. However, it integrates with existing in-game commands for registration and login:
+This plugin provides both web-based and in-game methods for authentication.
 
-- `/register <password> <confirm_password>`: Registers a new account in-game.
-- `/login <password>`: Logs into your registered account in-game.
+### Web Interface
+
+After installing and configuring the plugin, the web panel will be accessible via the configured host and port of the `pmmp-webserver` (default: `http://0.0.0.0:8080`).
+
+- **Login Page:** Navigate to `/login` to access the login form.
+  ![Login Page](assets/login_page.png)
+
+- **Registration Page:** Navigate to `/register` to create a new account.
+  ![Registration Page](assets/registration_page.png)
+
+- **Account Management:** After logging in, you will be redirected to your account page where you can manage your password.
+  ![Account Change Password](assets/account_change_password.png)
+
+### In-game Commands
+
+You can also use the following commands directly in-game:
+
+- `/register <password> <confirm_password>`: Registers a new account.
+- `/login <password>`: Logs into your registered account.
 
 ## Contributing
 

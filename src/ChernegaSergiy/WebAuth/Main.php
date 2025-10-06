@@ -34,21 +34,13 @@ use Hebbinkpro\WebServer\router\Router;
 use Hebbinkpro\WebServer\WebServer;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\event\Listener;
-use pocketmine\event\player\PlayerChatEvent;
-use pocketmine\event\player\PlayerDropItemEvent;
-use pocketmine\event\player\PlayerInteractEvent;
-use pocketmine\event\player\PlayerJoinEvent;
-use pocketmine\event\player\PlayerMoveEvent;
-use pocketmine\event\player\PlayerQuitEvent;
-use pocketmine\event\server\CommandEvent;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\Task;
 use pocketmine\utils\Config;
 use SQLite3;
 
-class Main extends PluginBase implements Listener {
+class Main extends PluginBase {
 
     private SQLite3 $db;
     private ?WebServer $webServer = null;
@@ -62,7 +54,7 @@ class Main extends PluginBase implements Listener {
             return;
         }
 
-        $this->getServer()->getPluginManager()->registerEvents($this, $this);
+        $this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
         $this->saveDefaultConfig();
         $this->config = $this->getConfig();
 
@@ -629,55 +621,7 @@ class Main extends PluginBase implements Listener {
         return isset($this->loggedInPlayers[$player->getName()]);
     }
 
-    public function onPlayerJoin(PlayerJoinEvent $event): void {
-        $player = $event->getPlayer();
-        if ($this->isRegistered($player->getName())) {
-            $player->sendMessage("§aWelcome back! Please /login <password> to continue.");
-        } else {
-            $player->sendMessage("§aWelcome! Please /register <password> <password> to secure your account.");
-        }
-    }
-
-    public function onPlayerQuit(PlayerQuitEvent $event): void {
-        unset($this->loggedInPlayers[$event->getPlayer()->getName()]);
-    }
-
-    private function blockAction(Player $player, string $message, \pocketmine\event\Cancellable $event): void {
-        if (!$this->isLoggedIn($player)) {
-            $player->sendMessage($message);
-            $event->setCancelled(true);
-        }
-    }
-
-    public function onPlayerMove(PlayerMoveEvent $event): void {
-        if (!$this->isLoggedIn($event->getPlayer())) {
-            $event->setCancelled(true);
-        }
-    }
-
-    public function onPlayerInteract(PlayerInteractEvent $event): void {
-        $this->blockAction($event->getPlayer(), "§cPlease login or register to interact.", $event);
-    }
-
-    public function onPlayerDropItem(PlayerDropItemEvent $event): void {
-        $this->blockAction($event->getPlayer(), "§cPlease login or register to drop items.", $event);
-    }
-
-    public function onPlayerChat(PlayerChatEvent $event): void {
-        $this->blockAction($event->getPlayer(), "§cPlease login or register to chat.", $event);
-    }
-
-    public function onServerCommand(CommandEvent $event): void {
-        $sender = $event->getSender();
-        if (!$sender instanceof Player) return;
-
-        $command = explode(" ", $event->getCommand())[0];
-
-        if ($this->isLoggedIn($sender)) return;
-
-        if (!in_array("/" . $command, ["/login", "/register"])){
-            $sender->sendMessage("§cYou must login or register to use commands.");
-            $event->cancel();
-        }
+    public function removeLoggedInPlayer(string $playerName): void {
+        unset($this->loggedInPlayers[$playerName]);
     }
 }

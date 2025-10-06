@@ -1,0 +1,10 @@
+# Configuration for WebAuth plugin
+
+# The host (IP address) for the web server to bind to.
+# Use "0.0.0.0" to make it accessible from other devices on your network.
+# Use "127.0.0.1" to make it accessible only from the machine running the server.
+host: "0.0.0.0"
+
+# The port for the web server to listen on.
+# Make sure this port is not already in use and is open in your firewall.
+port: 8080

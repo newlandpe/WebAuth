@@ -1,0 +1,24 @@
+---
+name: WebAuth
+main: WebAuth\Main
+version: 1.0.0
+api: 5.0.0
+author: ChernegaSergiy
+
+commands:
+  register:
+    description: "Register your account"
+    usage: "/register <password> <confirm_password>"
+    permission: webauth.command.register
+  login:
+    description: "Login to your account"
+    usage: "/login <password>"
+    permission: webauth.command.login
+permissions:
+  webauth.command.register:
+    default: true
+  webauth.command.login:
+    default: true
+  webauth.command.webauth:
+    default: op
+...

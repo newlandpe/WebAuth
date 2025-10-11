@@ -16,7 +16,6 @@
  *
  * The software is provided "as is" without warranty of any kind.
  *
- * @author LuthMC
  * @author Sergiy Chernega
  * @link https://chernega.eu.org/
  *
